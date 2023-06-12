@@ -3,9 +3,9 @@ extends Node
 var block_directional := 0
 
 enum BlockType{
-	SOURCE_BLOCK = 1,
-	CABLE = 2,
-	NOT_BLOCK = 4,
+	SOURCE_BLOCK = 0,
+	CABLE = 1,
+	NOT_BLOCK = 3,
 }
 var select_block := BlockType.SOURCE_BLOCK
 
@@ -23,7 +23,6 @@ func _input(event: InputEvent) -> void:
 #		print(select_block)
 	if event.keycode == KEY_3 or event.keycode == KEY_KP_3:
 		select_block = BlockType.NOT_BLOCK
-	
 	
 	if event.keycode == KEY_UP or event.keycode == KEY_W:
 		block_directional = 0

@@ -14,29 +14,41 @@ var direction_map = {
 }
 
 enum Elements {
-	SOURCE_BLOCK = 1,
-	DISABLE_CABLE = 2,
-	ENABLE_CABLE = 3,
-	NOT_BLOCK = 4,
+	SOURCE_BLOCK = 0,
+	DISABLE_CABLE = 1,
+	ENABLE_CABLE = 2,
+	NOT_BLOCK = 3,
 }
 
-const POWER_LAYER := 1
-const ELEMENTS_LAYER := 2
-const BUFER := 3
+const ELEMENTS_LAYER := 1
+const BUFER := 2
 
 
 func _input(event: InputEvent) -> void:
-	if Input.is_action_just_pressed("create_tail"):
+	if Input.is_action_just_released("create_tail"):
 		mouse_cord = local_to_map(get_global_mouse_position())
-		create_block()
+		if get_cell_atlas_coords(ELEMENTS_LAYER, mouse_cord) == -Vector2i.ONE and get_cell_atlas_coords(BUFER, mouse_cord) == -Vector2i.ONE:
+			create_block()
+		else:
+			delete_block()
 
 
 func create_block() -> void:
-	if get_cell_atlas_coords(1, mouse_cord) == -Vector2i.ONE and get_cell_atlas_coords(2, mouse_cord) == -Vector2i.ONE:
-		set_cell(BUFER, mouse_cord, 0, Vector2i(Blocks.select_block,0), Blocks.block_directional)
-	else:
-		erase_cell(ELEMENTS_LAYER, mouse_cord)
-		erase_cell(BUFER, mouse_cord)
+#	if get_cell_atlas_coords(ELEMENTS_LAYER, mouse_cord) != -Vector2i.ONE and get_cell_atlas_coords(BUFER, mouse_cord) != -Vector2i.ONE:
+#		return
+	
+	
+	if Blocks.select_block == Blocks.BlockType.CABLE:
+		set_cell(BUFER, mouse_cord, 0, Vector2i(Blocks.select_block,0),Blocks.block_directional)
+	elif Blocks.select_block != Blocks.BlockType.CABLE:
+		set_cell(BUFER, mouse_cord, 0, Vector2i(Blocks.select_block,0))
+
+func delete_block() -> void:
+#	if get_cell_atlas_coords(ELEMENTS_LAYER, mouse_cord) == -Vector2i.ONE and get_cell_atlas_coords(BUFER, mouse_cord) == -Vector2i.ONE:
+#		return
+	
+	erase_cell(ELEMENTS_LAYER, mouse_cord)
+	erase_cell(BUFER, mouse_cord)
 
 func stroke() -> void:
 	transfer_from_bufer()
@@ -46,7 +58,7 @@ func stroke() -> void:
 
 
 func transfer_from_bufer() -> void:
-	for i in get_used_cells(3):
+	for i in get_used_cells(BUFER):
 		set_cell(ELEMENTS_LAYER, i, 0, get_cell_atlas_coords(BUFER, i), get_cell_alternative_tile(BUFER, i)) # переносим элементы с буфера на слой с элементами
 	
 	clear_layer(BUFER)
@@ -63,7 +75,10 @@ func transfer_power_disable_cable() -> void:
 		
 		for j in neighbourhood_cells:
 			var direction = j-i
-				
+			
+			if is_powered(j):
+				neighbourhood_counter += 1
+			
 			if is_powered(j) and is_wired(j, -direction):
 				neighbourhood_counter += 1
 		
@@ -71,16 +86,19 @@ func transfer_power_disable_cable() -> void:
 			enable_cable(i)
 
 func transfer_power_enable_cable() -> void:
-	for i in get_used_cells_by_id(1,0,Vector2i(Elements.ENABLE_CABLE,0)):
+	for i in get_used_cells_by_id(ELEMENTS_LAYER,0,Vector2i(Elements.ENABLE_CABLE,0)):
 		var neighbourhood_counter := 0
 		
 		var neighbourhood_cells := [i+Vector2i.UP, i+Vector2i.DOWN, i+Vector2i.LEFT, i+Vector2i.RIGHT]
-		neighbourhood_cells.erase(i+direction_map[get_cell_alternative_tile(1, i)])
+		neighbourhood_cells.erase(i+direction_map[get_cell_alternative_tile(ELEMENTS_LAYER, i)])
 		
 		for j in neighbourhood_cells:
 			var direction = j-i
-				
+			
 			if is_powered(j):
+				neighbourhood_counter += 1
+			
+			if is_powered(j) and is_wired(j, -direction):
 				neighbourhood_counter += 1
 		
 		
@@ -88,12 +106,12 @@ func transfer_power_enable_cable() -> void:
 			disable_cable(i)
 
 func transfer_power_source_block() -> void:
-	for i in get_used_cells_by_id(1, 0, Vector2i(Elements.SOURCE_BLOCK,0)):
+	for i in get_used_cells_by_id(ELEMENTS_LAYER, 0, Vector2i(0,0)):
 		for j in get_surrounding_cells(i):
 			
 			var direction = j-i
 			
-			if get_cell_atlas_coords(1, j) == Vector2i(2,0) and is_wired(j, direction):
+			if get_cell_atlas_coords(ELEMENTS_LAYER, j) == Vector2i(1,0) and is_wired(j, direction):
 				enable_cable(j)
 
 
