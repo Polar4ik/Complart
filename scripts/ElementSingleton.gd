@@ -30,6 +30,7 @@ var selictions_element := {
 	ElementList.SOURCE_BLOCK: Vector2i(0,0),
 	ElementList.DISABLE_CABLE: Vector2i(1,0),
 	ElementList.NOT_ELEMENT: Vector2i(3,0),
+	ElementList.AND_ELEMENT: Vector2i(5,0),
 }
 
 
