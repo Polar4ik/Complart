@@ -79,9 +79,26 @@ func disable_cable_process() -> void:
 		if is_cell_enable(element):
 			set_element(element, ElementSingleton.ElementList.ENABLE_CABLE)
 
-func is_turned_on_us() -> bool:
-	return false
-
+func enable_cable_process() -> void:
+	for element in get_used_cells_by_id(ELEMENT_LAYER, 0, ElementSingleton.element_cord[ElementSingleton.ElementList.ENABLE_CABLE]):
+		enable_cell(element)
+		
+		var cell_neighboor := [element+Vector2i.UP, element+Vector2i.RIGHT, element+Vector2i.DOWN, element+Vector2i.LEFT]
+		cell_neighboor.erase(element+ElementSingleton.direction_map[get_cell_alternative_tile(ELEMENT_LAYER, element)])
+		
+		var neighboor_count := 0
+		
+		for neighboor in cell_neighboor:
+			var direction = neighboor - element
+			
+			if is_cell_enable(neighboor):
+				neighboor_count += 1
+		
+		if neighboor_count == 0:
+			disable_cell(element)
+		
+		if not is_cell_enable(element):
+			set_element(element, ElementSingleton.ElementList.DISABLE_CABLE)
 
 func set_element(cord: Vector2i, element: ElementSingleton.ElementList) -> void:
 	set_cell(BUFER, cord, 0, ElementSingleton.element_cord[element], get_cell_alternative_tile(ELEMENT_LAYER, cord))
@@ -105,6 +122,7 @@ func stroke() -> void:
 	transfer_from_bufer()
 	source_block_process()
 	disable_cable_process()
+	enable_cable_process()
 
 # вызов хода
 func _stroke_update() -> void:
