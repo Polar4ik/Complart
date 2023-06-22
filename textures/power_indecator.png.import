@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://vnsvth12ddpc"
-path="res://.godot/imported/background.png-c1b07215c0c7a4566a55dfd2136f642d.ctex"
+uid="uid://bhemhuodjji16"
+path="res://.godot/imported/power_indecator.png-663c7db87eb32992b8fbdcb3e905199a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/background.png"
-dest_files=["res://.godot/imported/background.png-c1b07215c0c7a4566a55dfd2136f642d.ctex"]
+source_file="res://textures/power_indecator.png"
+dest_files=["res://.godot/imported/power_indecator.png-663c7db87eb32992b8fbdcb3e905199a.ctex"]
 
 [params]
 
